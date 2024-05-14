@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>Login</h1>
+    <form hx-post="/login" hx-target="#login-result" hx-swap="innerHTML">
+        <label for="usuario">Usuario:</label>
+        <input type="text" id="usuario" name="usuario" required><br><br>
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <button type="submit">Ingresar</button>
+    </form>
+
+    <div id="login-result">
+        <!-- La respuesta del servidor se insertará aquí -->
+    </div>
+
+    <!-- Simulación de una respuesta del servidor para propósitos de demostración -->
+    <script>
+
+        document.addEventListener('htmx:beforeRequest', (event) => {
+                const usuario = document.getElementById('usuario').value;
+                const password = document.getElementById('password').value;
+                console.log("hola " + usuario + " " + password );
+                if (usuario === "admin" && password === "1234") {
+                     console.log("Usuario encontrado");
+                } else {
+                    console.log("Usuario no encontrado. Intente de nuevo.");
+                }
+
+        });
+    </script>
+</body>
+</html>

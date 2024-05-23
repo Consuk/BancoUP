@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transferencia</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        .form-panel {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            margin-bottom: 20px;
+        }
+        .navbar {
+            background-color: #0056b3;
+            color: white;
+            height: 50px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .logo {
+            height: 40px;
+            width: auto;
+        }
+        
+        input, textarea, button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            color: white;
+            background-color: #007bff;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #saldo {
+            font-size: 20px;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        #transferResult {
+            font-size: 16px;
+            color: green;
+        }
+        
+    </style>
+</head>
+<body onload="displayCurrentBalance()">
+    <div class="navbar">
+        <img src="./Images/Logo UP 2.png" alt="Banco UP Logo" class="logo">
+    </div>
+    <div class="container">
+        <h1>Realizar transferencia</h1>
+        <div id="saldo">Saldo Actual: Cargando...</div>
+        <div class="form-panel">
+            <form id="transferForm" hx-post="#"
+                  hx-trigger="submit"
+                  hx-target="#transferResult"
+                  hx-swap="outerHTML"
+                  onsubmit="return validateTransfer()">
+                <label for="account">Cuenta Destino:</label>
+                <input type="text" id="account" name="account" required>
+
+                <label for="amount">Monto:</label>
+                <input type="number" id="amount" name="amount" required min="1">
+
+                <label for="concept">Concepto (máximo 300 caracteres):</label>
+                <textarea id="concept" name="concept" required maxlength="300"></textarea>
+
+                <button type="submit">Enviar Transferencia</button>
+            </form>
+        </div>
+        <div id="transferResult">
+            <!-- Resultados o errores de la transferencia se mostrarán aquí -->
+        </div>
+    </div>
+    <script>
+        function displayCurrentBalance() {
+            const userData = JSON.parse(localStorage.getItem('user'));
+            document.getElementById('saldo').textContent = 'Saldo Actual: $' + userData.saldo.toFixed(2);
+        }
+
+        function validateTransfer() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const account = document.getElementById('account').value;
+            const concept = document.getElementById('concept').value;
+            const userData = JSON.parse(localStorage.getItem('user'));
+            const currentBalance = userData.saldo;
+
+            if (amount > currentBalance) {
+                document.getElementById('transferResult').textContent = "El monto excede el saldo actual de $" + currentBalance.toFixed(2);
+                document.getElementById('transferResult').style.color = 'red';
+                return false;
+            }
+
+            // Actualizar saldo y guardar nueva transferencia
+            userData.saldo -= amount;
+            userData.historial.push({
+                fecha: new Date().toISOString().split('T')[0], // Obtener fecha actual en formato YYYY-MM-DD
+                monto: -amount,
+                descripcion: `Transferencia a ${account}: ${concept}`
+            });
+            localStorage.setItem('user', JSON.stringify(userData)); // Guardar nuevo estado en localStorage
+            displayCurrentBalance(); // Actualizar visualización del saldo
+
+            document.getElementById('transferResult').textContent = "Transferencia de $" + amount.toFixed(2) + " a la cuenta " + account + " realizada con éxito.";
+            document.getElementById('transferResult').style.color = 'green';
+            return false;  // Previene la recarga completa de la página
+        }
+    </script>
+</body>
+</html>

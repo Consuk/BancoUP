@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuenta</title>
+    <script src="https://unpkg.com/htmx.org@1.9.12" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .navbar {
+            background-color: #0056b3;
+            color: white;
+            height: 50px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .logo {
+            height: 40px;
+            width: auto;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        h1, .saldo, .historial-item {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body onload="loadAccountInfo()">
+    <div class="navbar">
+        <img src="./Images/Logo UP 2.png" alt="Banco UP Logo" class="logo">
+    </div>
+    <div class="container">
+        <h1>SALDO</h1>
+        <div class="saldo" id="saldo">Cargando...</div>
+        <button hx-get="loadHistory()" hx-trigger="click" hx-target="#historial" hx-swap="innerHTML"><a href="/historial.html">Ver Historial</a></button>
+        <button hx-get="transfer()" hx-trigger="click" hx-target="#transferir" hx-swap="innerHTML"><a href="/tranferir.html">Transferir</a></button>
+    </div>
+    <script>
+        function loadAccountInfo() {
+            const userData = JSON.parse(localStorage.getItem('user'));
+            document.getElementById('saldo').textContent = `$${userData.saldo}`;
+        }
+
+        function loadHistory() {
+            const userData = JSON.parse(localStorage.getItem('user'));
+            return userData.historial.map(item => {
+                return `<div class='historial-item'>${item.fecha} - ${item.descripcion}: $${item.monto}</div>`;
+            }).join('');
+        }
+    </script>
+</body>
+</html>

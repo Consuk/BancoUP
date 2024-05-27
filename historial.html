@@ -13,54 +13,164 @@
             background-color: #f4f4f4;
         }
         .navbar {
-            background-color: #0056b3;
+            background-color: #891739;
             color: white;
             height: 50px;
             display: flex;
-            justify-content: space-between; /* Adjusted for spacing */
+            justify-content: space-between;
             align-items: center;
             padding: 0 20px;
+            position: relative;
         }
-        .logo, .back-icon {
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        .logo {
             height: 40px;
             width: auto;
-        }
-        .back-icon {
             cursor: pointer;
+        }
+        .logout-box {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            width: 150px;
+            z-index: 1000;
+            transform: translateY(-10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .logout-box.show {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .logout-box button {
+            width: 100%;
+            color: white;
+            background-color: #cd9a12;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+            padding: 10px 0;
+            border-radius: 5px;
+        }
+        .logout-box button:hover {
+            background-color: #cf9a07;
         }
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 20px;
+            padding-top: 3%;
         }
-        .historial-item {
-            font-size: 18px;
+        h1 {
+            font-size: 24px;
             color: #333;
-            margin-bottom: 10px;
-            padding: 5px;
-            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        td.concepto {
+            max-width: 200px; /* Adjust as needed */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        td.descripcion {
+            word-wrap: break-word; /* Allows wrapping for long descriptions */
         }
     </style>
 </head>
 <body>
     <div class="navbar">
-        <img src="./Images/Logo UP 2.png" alt="Banco UP Logo" class="logo">
+        <div class="nav-links">
+            <a href="/cuenta.html">Cuenta</a>
+            <a href="/transferir.html">Transferencia</a>
+            <a href="/historial.html">Historial</a>
+        </div>
+        <img src="./Images/Logo UP 2.png" alt="Banco UP Logo" class="logo" onclick="toggleLogoutBox()">
+        <div class="logout-box" id="logoutBox">
+            <button onclick="logout()">Cerrar Sesión</button>
+        </div>
     </div>
     <div class="container">
-        <h1>Historial de transacciones</h1>
-        <div id="historial">
-            <!-- El historial se cargará aquí -->
-        </div>
+        <h1>Historial de Transacciones</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Concepto</th>
+                    <th>Descripción</th>
+                    <th>Fecha de movimiento</th>
+                    <th>Monto</th>
+                </tr>
+            </thead>
+            <tbody id="historial">
+                <!-- El historial se cargará aquí -->
+            </tbody>
+        </table>
     </div>
     <script>
         window.onload = function() {
             const historialContainer = document.getElementById('historial');
             const userData = JSON.parse(localStorage.getItem('user'));
             const historialHTML = userData.historial.map(item => {
-                return `<div class='historial-item'>${item.fecha} - ${item.descripcion}: $${item.monto}</div>`;
+                return `<tr>
+                            <td class="concepto">${item.concepto || 'N/A'}</td>
+                            <td class="descripcion">${item.descripcion}</td>
+                            <td>${item.fecha}</td>
+                            <td>$${item.monto}</td>
+                        </tr>`;
             }).join('');
             historialContainer.innerHTML = historialHTML;
+        }
+
+        function toggleLogoutBox() {
+            const logoutBox = document.getElementById('logoutBox');
+            if (logoutBox.classList.contains('show')) {
+                logoutBox.classList.remove('show');
+                setTimeout(() => {
+                    logoutBox.style.display = 'none';
+                }, 300);
+            } else {
+                logoutBox.style.display = 'block';
+                setTimeout(() => {
+                    logoutBox.classList.add('show');
+                }, 10);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user'); // Remover datos del usuario de localStorage
+            window.location.href = '/index.html'; // Redirigir a la página de login
         }
     </script>
 </body>

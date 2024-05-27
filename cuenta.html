@@ -12,64 +12,166 @@
             background-color: #f4f4f4;
         }
         .navbar {
-            background-color: #0056b3;
+            background-color: #891739;
             color: white;
             height: 50px;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
             padding: 0 20px;
+            position: relative;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
         }
         .logo {
             height: 40px;
             width: auto;
+            cursor: pointer;
+        }
+        .logout-box {
+            display: none;
+            position: absolute;
+            top: 50px;
+            right: 20px;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            width: 150px;
+            z-index: 1000;
+            transform: translateY(-10px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .logout-box.show {
+            display: block;
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .logout-box button {
+            width: 100%;
+            color: white;
+            background-color: #cd9a12;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+            padding: 10px 0;
+            border-radius: 5px;
+        }
+        .logout-box button:hover {
+            background-color: #cf9a07;
         }
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 20px;
+            padding-top: 3%;
         }
-        h1, .saldo, .historial-item {
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        h1 {
             font-size: 24px;
             color: #333;
             margin-bottom: 20px;
         }
+        .saldo {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .historial-item {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
         button {
             padding: 10px 20px;
-            margin: 10px;
+            margin: 10px 0;
             border-radius: 5px;
             border: none;
-            background-color: #007bff;
+            background-color: #cd9a12;
             color: white;
             cursor: pointer;
+            width: 100%; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #cf9a07;
+        }
+        a {
+            color: inherit; 
+            text-decoration: none; 
+            display: block; 
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            padding: 10px 0; 
         }
     </style>
 </head>
 <body onload="loadAccountInfo()">
     <div class="navbar">
-        <img src="./Images/Logo UP 2.png" alt="Banco UP Logo" class="logo">
+        <div class="nav-links">
+            <a href="/cuenta.html">Cuenta</a>
+            <a href="/transferir.html">Transferencia</a>
+            <a href="/historial.html">Historial</a>
+        </div>
+        <img src="./Images/Logo UP 2.png" alt="Banco UP Logo" class="logo" onclick="toggleLogoutBox()">
+        <div class="logout-box" id="logoutBox">
+            <button onclick="logout()">Cerrar Sesión</button>
+        </div>
     </div>
     <div class="container">
-        <h1>SALDO</h1>
-        <div class="saldo" id="saldo">Cargando...</div>
-        <button hx-get="loadHistory()" hx-trigger="click" hx-target="#historial" hx-swap="innerHTML"><a href="/historial.html">Ver Historial</a></button>
-        <button hx-get="transfer()" hx-trigger="click" hx-target="#transferir" hx-swap="innerHTML"><a href="/tranferir.html">Transferir</a></button>
+        <div class="card">
+            <h1>SALDO ACTUAL</h1>
+            <div class="saldo" id="saldo">Cargando...</div>
+            <button onclick="window.location.href='/historial.html'">Ver Historial</button>
+            <button onclick="window.location.href='/transferir.html'">Transferir</button>
+        </div>
     </div>
     <script>
         function loadAccountInfo() {
             const userData = JSON.parse(localStorage.getItem('user'));
-            document.getElementById('saldo').textContent = `$${userData.saldo}`;
+            document.getElementById('saldo').textContent = `$ ${userData.saldo}`;
         }
 
-        function loadHistory() {
-            const userData = JSON.parse(localStorage.getItem('user'));
-            return userData.historial.map(item => {
-                return `<div class='historial-item'>${item.fecha} - ${item.descripcion}: $${item.monto}</div>`;
-            }).join('');
+        function toggleLogoutBox() {
+            const logoutBox = document.getElementById('logoutBox');
+            if (logoutBox.classList.contains('show')) {
+                logoutBox.classList.remove('show');
+                setTimeout(() => {
+                    logoutBox.style.display = 'none';
+                }, 300);
+            } else {
+                logoutBox.style.display = 'block';
+                setTimeout(() => {
+                    logoutBox.classList.add('show');
+                }, 10);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('user'); // Remover datos del usuario de localStorage
+            window.location.href = '/index.html'; // Redirigir a la página de login
         }
     </script>
 </body>

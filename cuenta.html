@@ -156,7 +156,6 @@
             // TODO: mandar val_str
             // const userData = JSON.parse(sessionStorage.getItem('user'));
             const userData = JSON.parse(sessionStorage.getItem('user'));
-
             
             console.log("Val_str: ", userData.val_str);
             console.log('Fetching from endpoint: '+api_endpoint );
@@ -164,6 +163,7 @@
             // Crear parametros URL
             const params = new URLSearchParams();
             params.append('val_str', userData.val_str);
+            params.append('id_user', userData.id_user);
 
             const urlWithParams = api_endpoint + '/user_info.php?' + params.toString();
             console.log('fetch url: '+urlWithParams);

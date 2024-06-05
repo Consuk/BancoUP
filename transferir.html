@@ -185,6 +185,7 @@
             const account = document.getElementById('account').value;
             const concept = document.getElementById('concept').value;
             const userData = JSON.parse(sessionStorage.getItem('user'));
+            const user = document.getElementById('usuario').value;
             // const currentBalance = userData.saldo;
 
             if (amount > currentBalance) {
@@ -196,10 +197,11 @@
             // Actualizar saldo y guardar nueva transferencia
             const data_val = new URLSearchParams();
             data_val.append('val_str', userData.val_str);
-            data_val.append('sender_account', userData.id_user);
+            data_val.append('id_user', userData.id_user);
             data_val.append('receiver_account', account);
             data_val.append('concept', concept);
             data_val.append('amount', amount);
+        
             fetch(api_endpoint+'/transfer.php',
                 {
                     method: 'POST',

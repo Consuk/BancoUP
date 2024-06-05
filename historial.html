@@ -144,6 +144,8 @@
             const userData = JSON.parse(sessionStorage.getItem('user'));
             const params = new URLSearchParams();
             params.append('val_str', userData.val_str);
+            params.append('sender_account', userData.id_user);
+            params.append('id_user', userData.id_user);
             fetch(api_endpoint+'/history.php?'+params.toString())
                 .then((response) => response.json())
                 .then((historial) => {

@@ -150,25 +150,42 @@
     </div>
     <script src="resources/keys.js"></script>
     <script>
+        var currentBalance = 0.0;
         function displayCurrentBalance() {
-            fetch(api_endpoint+'/user_info.php')
+            
+            // TODO: Validacion en transferencia de val_str
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            const data_val = new URLSearchParams();
+            data_val.append('val_str', userData.val_str);
+            // const params = {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/x-www-form-urlencoded'
+            //     },
+            //     body:   data_val,
+            // };
+            fetch(api_endpoint+'/user_info.php?'+data_val.toString())
                 .then((response) => {
                     return response.json();
                 })
                 .then((json) => {
                     console.log(json)
                     document.getElementById('saldo').textContent = `$ ${json.balance.toFixed(2)}`
+                    currentBalance = json.balance;
+                }).catch((error) => {
+                    console.log(error);
+                    alert('Usuario o contraseña incorrectos');
                 });
             // const userData = JSON.parse(localStorage.getItem('user'));
             // document.getElementById('saldo').textContent = 'Saldo Actual: $' + userData.saldo.toFixed(2);
         }
 
         function validateTransfer() {
-            const amount = parseFloat(document.getElementById('amount').value);
+            const amount  = parseFloat(document.getElementById('amount').value);
             const account = document.getElementById('account').value;
             const concept = document.getElementById('concept').value;
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const currentBalance = userData.saldo;
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            // const currentBalance = userData.saldo;
 
             if (amount > currentBalance) {
                 document.getElementById('transferResult').textContent = "El monto excede el saldo actual de $" + currentBalance.toFixed(2);
@@ -177,14 +194,33 @@
             }
 
             // Actualizar saldo y guardar nueva transferencia
-            userData.saldo -= amount;
-            userData.historial.push({
-                fecha: new Date().toISOString().split('T')[0], // Obtener fecha actual en formato YYYY-MM-DD
-                monto: -amount,
-                descripcion: `Transferencia a ${account}`,
-                concepto: `${concept}`
-            });
-            localStorage.setItem('user', JSON.stringify(userData)); // Guardar nuevo estado en localStorage
+            const data_val = new URLSearchParams();
+            data_val.append('val_str', userData.val_str);
+            data_val.append('sender_account', userData.id_user);
+            data_val.append('receiver_account', account);
+            data_val.append('concept', concept);
+            data_val.append('amount', amount);
+            fetch(api_endpoint+'/transfer.php',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body:   data_val
+                }
+            )
+                .then((response) => response.text())
+                .then((message) => {
+                    console.log(message);
+                })
+            // userData.saldo -= amount;
+            // userData.historial.push({
+            //     fecha: new Date().toISOString().split('T')[0], // Obtener fecha actual en formato YYYY-MM-DD
+            //     monto: -amount,
+            //     descripcion: `Transferencia a ${account}`,
+            //     concepto: `${concept}`
+            // });
+            // localStorage.setItem('user', JSON.stringify(userData)); // Guardar nuevo estado en localStorage
             displayCurrentBalance(); // Actualizar visualización del saldo
 
             document.getElementById('transferResult').textContent = "Transferencia de $" + amount.toFixed(2) + " a la cuenta " + account + " realizada con éxito.";

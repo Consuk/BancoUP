@@ -153,15 +153,32 @@
         // import {api_endpoint} from 'resources/keys.js';
         function loadAccountInfo() {
             // const userData = JSON.parse(localStorage.getItem('user'));
-            console.log('Fetching from endpoint: '+api_endpoint);
-            fetch(api_endpoint+'/user_info.php')
+            // TODO: mandar val_str
+            // const userData = JSON.parse(sessionStorage.getItem('user'));
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+
+            
+            console.log("Val_str: ", userData.val_str);
+            console.log('Fetching from endpoint: '+api_endpoint );
+
+            // Crear parametros URL
+            const params = new URLSearchParams();
+            params.append('val_str', userData.val_str);
+
+            const urlWithParams = api_endpoint + '/user_info.php?' + params.toString();
+            console.log('fetch url: '+urlWithParams);
+
+            
+            fetch(urlWithParams)
                 .then((response) => {
                     return response.json();
                 })
                 .then((json) => {
                     console.log(json)
                     document.getElementById('saldo').textContent = `$ ${json.balance.toFixed(2)}`
-                });
+                }).catch(error=> console.log("Error fetcing account info", error));
+            
+            
 
             // document.getElementById('saldo').textContent = `$ ${userData.saldo}`;
         }
@@ -182,8 +199,8 @@
         }
 
         function logout() {
-            localStorage.removeItem('user'); // Remover datos del usuario de localStorage
-            window.location.href = '/index.html'; // Redirigir a la página de login
+            localStorage.removeItem('user'); 
+            window.location.href = '/index.html'; 
         }
     </script>
 </body>

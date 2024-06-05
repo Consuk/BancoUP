@@ -74,20 +74,45 @@
             <button type="submit">Ingresar</button>
         </form>
     </div>
+    <script src="resources/keys.js"></script>
     <script>
         function checkLogin() {
             const user = document.getElementById('usuario').value;
             const pass = document.getElementById('password').value;
-            if (user === 'admin' && pass === '1234') {
-                localStorage.setItem('user', JSON.stringify({usuario: user, saldo: 3000, historial: [
-                    { fecha: '2023-05-01', monto: -150, descripcion: 'Transferencia a Cuenta 12345', concepto: "Chilaquiles"},
-                    { fecha: '2023-05-02', monto: 200, descripcion: 'Depósito de Cuenta 67890', concepto: "Uber mx reembolso"}
-                ]}));
-                window.location.href = 'cuenta.html';
-            } else {
-                alert('Usuario o contraseña incorrectos');
-            }
+
+            const data = new URLSearchParams();
+            data.append('username', user);
+            data.append('password', pass);
+            const params = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body:   data
+            };
+            fetch(api_endpoint+'/validate_user.php', params)
+                .then((response) => response.text())
+                .then((sessionInfo) => {
+                    console.log('response: '+sessionInfo)
+
+                    sessionStorage.setItem('user', sessionInfo);
+                    window.location.href = 'cuenta.html';
+                })
+                .catch((error) => {
+                    console.log(error);
+                    alert('Usuario o contraseña incorrectos');
+                });
             return false;
+            // if (user === 'admin' && pass === '1234') {
+            //     localStorage.setItem('user', JSON.stringify({usuario: user, saldo: 3000, historial: [
+            //         { fecha: '2023-05-01', monto: -150, descripcion: 'Transferencia a Cuenta 12345', concepto: "Chilaquiles"},
+            //         { fecha: '2023-05-02', monto: 200, descripcion: 'Depósito de Cuenta 67890', concepto: "Uber mx reembolso"}
+            //     ]}));
+            //     window.location.href = 'cuenta.html';
+            // } else {
+            //     alert('Usuario o contraseña incorrectos');
+            // }
+            // return false;
         }
     </script>
 </body>

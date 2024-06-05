@@ -141,7 +141,10 @@
     <script src="resources/keys.js"></script>
     <script>
         window.onload = function() {
-            fetch(api_endpoint+'/history.php')
+            const userData = JSON.parse(sessionStorage.getItem('user'));
+            const params = new URLSearchParams();
+            params.append('val_str', userData.val_str);
+            fetch(api_endpoint+'/history.php?'+params.toString())
                 .then((response) => response.json())
                 .then((historial) => {
                     const historialContainer = document.getElementById('historial');

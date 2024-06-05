@@ -138,19 +138,24 @@
             </tbody>
         </table>
     </div>
+    <script src="resources/keys.js"></script>
     <script>
         window.onload = function() {
-            const historialContainer = document.getElementById('historial');
-            const userData = JSON.parse(localStorage.getItem('user'));
-            const historialHTML = userData.historial.map(item => {
-                return `<tr>
-                            <td class="concepto">${item.concepto || 'N/A'}</td>
-                            <td class="descripcion">${item.descripcion}</td>
-                            <td>${item.fecha}</td>
-                            <td>$${item.monto}</td>
-                        </tr>`;
-            }).join('');
-            historialContainer.innerHTML = historialHTML;
+            fetch(api_endpoint+'/history.php')
+                .then((response) => response.json())
+                .then((historial) => {
+                    const historialContainer = document.getElementById('historial');
+                    // const userData = JSON.parse(localStorage.getItem('user'));
+                    const historialHTML = historial.map(item => {
+                        return `<tr>
+                                    <td class="concepto">${item.concepto || 'N/A'}</td>
+                                    <td class="descripcion">${item.descripcion}</td>
+                                    <td>${item.fecha}</td>
+                                    <td>$${item.monto.toFixed(2)}</td>
+                                </tr>`;
+                    }).join('');
+                    historialContainer.innerHTML = historialHTML;
+                });
         }
 
         function toggleLogoutBox() {

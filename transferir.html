@@ -148,10 +148,19 @@
             <!-- Resultados o errores de la transferencia se mostrarán aquí -->
         </div>
     </div>
+    <script src="resources/keys.js"></script>
     <script>
         function displayCurrentBalance() {
-            const userData = JSON.parse(localStorage.getItem('user'));
-            document.getElementById('saldo').textContent = 'Saldo Actual: $' + userData.saldo.toFixed(2);
+            fetch(api_endpoint+'/user_info.php')
+                .then((response) => {
+                    return response.json();
+                })
+                .then((json) => {
+                    console.log(json)
+                    document.getElementById('saldo').textContent = `$ ${json.balance.toFixed(2)}`
+                });
+            // const userData = JSON.parse(localStorage.getItem('user'));
+            // document.getElementById('saldo').textContent = 'Saldo Actual: $' + userData.saldo.toFixed(2);
         }
 
         function validateTransfer() {

@@ -141,27 +141,38 @@
     <script src="resources/keys.js"></script>
     <script>
         window.onload = function() {
-            const userData = JSON.parse(sessionStorage.getItem('user'));
-            const params = new URLSearchParams();
-            params.append('val_str', userData.val_str);
-            params.append('sender_account', userData.id_user);
-            params.append('id_user', userData.id_user);
-            fetch(api_endpoint+'/history.php?'+params.toString())
-                .then((response) => response.json())
-                .then((historial) => {
-                    const historialContainer = document.getElementById('historial');
-                    // const userData = JSON.parse(localStorage.getItem('user'));
-                    const historialHTML = historial.map(item => {
-                        return `<tr>
-                                    <td class="concepto">${item.concepto || 'N/A'}</td>
-                                    <td class="descripcion">${item.descripcion}</td>
-                                    <td>${item.fecha}</td>
-                                    <td>$${item.monto.toFixed(2)}</td>
-                                </tr>`;
-                    }).join('');
-                    historialContainer.innerHTML = historialHTML;
-                });
-        }
+    const userData = JSON.parse(sessionStorage.getItem('user'));
+    
+    // Check if userData is not null and has the necessary properties
+    if (userData && userData.id_user && userData.val_str) {
+        const params = new URLSearchParams();
+        params.append('val_str', userData.val_str);
+        params.append('sender_account', userData.id_user);
+        params.append('id_user', userData.id_user);
+        
+        fetch(api_endpoint + '/history.php?' + params.toString())
+            .then((response) => response.json())
+            .then((historial) => {
+                const historialContainer = document.getElementById('historial');
+                const historialHTML = historial.map(item => {
+                    return `<tr>
+                                <td class="concepto">${item.concepto || 'N/A'}</td>
+                                <td class="descripcion">${item.descripcion}</td>
+                                <td>${item.fecha}</td>
+                                <td>$${item.monto.toFixed(2)}</td>
+                            </tr>`;
+                }).join('');
+                historialContainer.innerHTML = historialHTML;
+            })
+            .catch((error) => {
+                console.error(error);
+                alert('Error al obtener el historial');
+            });
+    } else {
+        console.log('No user data found in session storage or missing properties');
+        alert('Usuario no encontrado. Por favor, inicie sesión nuevamente.');
+    }
+};
 
         function toggleLogoutBox() {
             const logoutBox = document.getElementById('logoutBox');

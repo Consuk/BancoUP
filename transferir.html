@@ -152,33 +152,33 @@
     <script>
         var currentBalance = 0.0;
         function displayCurrentBalance() {
-            
-            // TODO: Validacion en transferencia de val_str
-            const userData = JSON.parse(sessionStorage.getItem('user'));
-            const data_val = new URLSearchParams();
-            data_val.append('val_str', userData.val_str);
-            // const params = {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/x-www-form-urlencoded'
-            //     },
-            //     body:   data_val,
-            // };
-            fetch(api_endpoint+'/user_info.php?'+data_val.toString())
-                .then((response) => {
-                    return response.json();
-                })
-                .then((json) => {
-                    console.log(json)
-                    document.getElementById('saldo').textContent = `$ ${json.balance.toFixed(2)}`
-                    currentBalance = json.balance;
-                }).catch((error) => {
-                    console.log(error);
-                    alert('Usuario o contraseña incorrectos');
-                });
-            // const userData = JSON.parse(localStorage.getItem('user'));
-            // document.getElementById('saldo').textContent = 'Saldo Actual: $' + userData.saldo.toFixed(2);
-        }
+    // Retrieve user data from session storage
+    const userData = JSON.parse(sessionStorage.getItem('user'));
+    
+    // Check if userData is not null
+    if (userData && userData.id_user) {
+        const data_val = new URLSearchParams();
+        data_val.append('val_str', userData.id_user);
+
+        fetch(api_endpoint + '/user_info.php?' + data_val.toString())
+            .then((response) => {
+                return response.json();
+            })
+            .then((json) => {
+                console.log(json);
+                document.getElementById('saldo').textContent = `$ ${json.balance.toFixed(2)}`;
+                currentBalance = json.balance;
+            })
+            .catch((error) => {
+                console.log(error);
+                alert('Error al obtener la información del usuario');
+            });
+    } else {
+        console.log('No user data found in session storage');
+        alert('Usuario no encontrado. Por favor, inicie sesión nuevamente.');
+    }
+}
+
 
         function validateTransfer() {
             const amount  = parseFloat(document.getElementById('amount').value);

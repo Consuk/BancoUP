@@ -1,1 +1,1 @@
-const api_endpoint = 'http://localhost:8000'
+const api_endpoint = 'http://127.0.0.1:5500/'

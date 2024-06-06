@@ -152,36 +152,39 @@
     <script>
         // import {api_endpoint} from 'resources/keys.js';
         function loadAccountInfo() {
-            // const userData = JSON.parse(localStorage.getItem('user'));
-            // TODO: mandar val_str
-            // const userData = JSON.parse(sessionStorage.getItem('user'));
-            const userData = JSON.parse(sessionStorage.getItem('user'));
-            
-            console.log("Val_str: ", userData.val_str);
-            console.log('Fetching from endpoint: '+api_endpoint );
+    // Retrieve user data from session storage
+    const userData = JSON.parse(sessionStorage.getItem('user'));
 
-            // Crear parametros URL
-            const params = new URLSearchParams();
-            params.append('val_str', userData.val_str);
-            params.append('id_user', userData.id_user);
+    // Check if userData is not null and has the necessary properties
+    if (userData && userData.val_str && userData.id_user) {
+        console.log("Val_str: ", userData.val_str);
+        console.log('Fetching from endpoint: ' + api_endpoint);
 
-            const urlWithParams = api_endpoint + '/user_info.php?' + params.toString();
-            console.log('fetch url: '+urlWithParams);
+        // Crear parametros URL
+        const params = new URLSearchParams();
+        params.append('val_str', userData.val_str);
+        params.append('id_user', userData.id_user);
 
-            
-            fetch(urlWithParams)
-                .then((response) => {
-                    return response.json();
-                })
-                .then((json) => {
-                    console.log(json)
-                    document.getElementById('saldo').textContent = `$ ${json.balance.toFixed(2)}`
-                }).catch(error=> console.log("Error fetcing account info", error));
-            
-            
+        const urlWithParams = api_endpoint + '/user_info.php?' + params.toString();
+        console.log('Fetch URL: ' + urlWithParams);
 
-            // document.getElementById('saldo').textContent = `$ ${userData.saldo}`;
-        }
+        fetch(urlWithParams)
+            .then((response) => response.json())
+            .then((json) => {
+                console.log(json);
+                document.getElementById('saldo').textContent = `$ ${json.balance.toFixed(2)}`;
+            })
+            .catch((error) => console.log("Error fetching account info", error));
+    } else {
+        console.log('No user data found in session storage or missing properties');
+        alert('Usuario no encontrado. Por favor, inicie sesión nuevamente.');
+    }
+}
+
+// Ensure to call loadAccountInfo after the DOM has fully loaded
+document.addEventListener('DOMContentLoaded', (event) => {
+    loadAccountInfo();
+});
 
         function toggleLogoutBox() {
             const logoutBox = document.getElementById('logoutBox');
